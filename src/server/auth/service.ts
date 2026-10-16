@@ -2,10 +2,10 @@ import { randomBytes } from 'node:crypto';
 import { DomainError } from '@/lib/errors';
 import type { LoginInput, RegisterInput } from '@/lib/validation';
 import type { Repository, SessionRecord, UserRecord } from '../db/types';
+import { SESSION_TTL_DAYS } from './constants';
 import { hashPassword, verifyPassword } from './password';
 
-export const SESSION_TTL_DAYS = 7;
-export const SESSION_COOKIE = 'pulseboard_session';
+export { SESSION_COOKIE, SESSION_TTL_DAYS } from './constants';
 
 export function generateSessionToken(): string {
   return randomBytes(32).toString('hex');

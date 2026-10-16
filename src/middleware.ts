@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { SESSION_COOKIE } from '@/server/auth/service';
+import { SESSION_COOKIE } from '@/server/auth/constants';
 
 const PUBLIC_PATHS = ['/entrar', '/cadastro'];
 
