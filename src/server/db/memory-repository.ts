@@ -12,11 +12,19 @@ import type {
 /**
  * Implementacao em memoria do Repository. Usada nos testes unitarios e no
  * modo demo (`DB_DRIVER=memory`), que roda o app inteiro sem banco de dados.
+ * Aceita dados iniciais (seed) inseridos de forma sincrona na criacao.
  */
-export function createMemoryRepository(): Repository {
-  const users = new Map<string, UserRecord>();
+export interface MemorySeed {
+  users?: UserRecord[];
+  customers?: CustomerRecord[];
+}
+
+export function createMemoryRepository(seed: MemorySeed = {}): Repository {
+  const users = new Map<string, UserRecord>((seed.users ?? []).map((user) => [user.id, user]));
   const sessions = new Map<string, { token: string; userId: string; expiresAt: Date; createdAt: Date }>();
-  const customers = new Map<string, CustomerRecord>();
+  const customers = new Map<string, CustomerRecord>(
+    (seed.customers ?? []).map((customer) => [customer.id, customer]),
+  );
 
   return {
     async findUserByEmail(email) {

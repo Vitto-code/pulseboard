@@ -41,6 +41,8 @@ export interface CreateCustomerData {
   plan: Plan;
   status: CustomerStatus;
   mrrCents: number;
+  /** Uso exclusivo de seeds: em operacao normal o banco define a data. */
+  createdAt?: Date;
 }
 
 export type UpdateCustomerData = Partial<CreateCustomerData>;
