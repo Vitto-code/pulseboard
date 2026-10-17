@@ -84,7 +84,10 @@ export function buildDemoCustomers(reference: Date = new Date()): CreateCustomer
               ? 'ACTIVE'
               : 'CHURNED';
 
-      const day = 1 + Math.floor(random() * 27);
+      // No mes corrente, limita o dia ao dia de hoje para nao criar
+      // cadastros "no futuro".
+      const maxDay = monthsAgo === 0 ? reference.getUTCDate() : 28;
+      const day = 1 + Math.floor(random() * Math.max(1, maxDay - 1));
       customers.push({
         name,
         email,
