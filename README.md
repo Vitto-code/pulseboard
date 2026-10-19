@@ -95,6 +95,29 @@ npm run dev:demo
 
 O modo demo usa o `MemoryRepository` com os mesmos dados de exemplo; tudo funciona, mas os dados somem ao reiniciar. Com Make instalado, `make setup`, `make db`, `make migrate`, `make seed` e `make dev` cobrem o fluxo inteiro.
 
+**Com PostgreSQL serverless (Neon) em vez de Docker:**
+
+```bash
+npm install
+npx neon init -y          # vincula um projeto Neon (requer login)
+npx neon deploy           # grava DATABASE_URL e DATABASE_URL_UNPOOLED em .env.local
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
+
+## Deploy (Netlify + Neon)
+
+O app esta pronto para deploy continuo no Netlify com banco serverless no Neon:
+
+1. Crie um projeto no [Neon](https://neon.com) (plano gratuito) e rode `npx neon init` + `npx neon deploy` na raiz — isso gera o `neon.ts` e o `.env.local`.
+2. No Netlify: **Add new site → Import from GitHub → pulseboard**. O [netlify.toml](netlify.toml) instala o runtime oficial do Next.js e roda `prisma migrate deploy` a cada build.
+3. Cadastre `DATABASE_URL` e `DATABASE_URL_UNPOOLED` (as strings do Neon) em **Site configuration → Environment variables**.
+4. Popule os dados demo uma unica vez, do seu computador: `DATABASE_URL=<string do Neon> npm run db:seed`.
+5. A partir dai, todo push na `main` dispara deploy com migracoes automaticas.
+
+Nao use `DB_DRIVER=memory` em producao: em serverless a memoria e descartada entre requisicoes e a sessao de login nao sobrevive.
+
 ## Como testar
 
 ```bash
