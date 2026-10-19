@@ -4,7 +4,9 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+  // Pooled (PgBouncer) para o app serverless; conexao direta para migracoes.
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 enum Plan {
