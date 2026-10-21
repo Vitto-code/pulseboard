@@ -5,5 +5,4 @@ coverage/
 *.log
 next-env.d.ts
 tsconfig.tsbuildinfo
-.neon
 .env.local

@@ -95,26 +95,15 @@ npm run dev:demo
 
 O modo demo usa o `MemoryRepository` com os mesmos dados de exemplo; tudo funciona, mas os dados somem ao reiniciar. Com Make instalado, `make setup`, `make db`, `make migrate`, `make seed` e `make dev` cobrem o fluxo inteiro.
 
-**Com PostgreSQL serverless (Neon) em vez de Docker:**
+## Deploy (Vercel)
 
-```bash
-npm install
-npx neon init -y          # vincula um projeto Neon (requer login)
-npx neon deploy           # grava DATABASE_URL e DATABASE_URL_UNPOOLED em .env.local
-npm run db:migrate
-npm run db:seed
-npm run dev
-```
+O app e Next.js puro (App Router), entao o deploy na Vercel e direto — sem arquivo de configuracao:
 
-## Deploy (Netlify + Neon)
-
-O app esta pronto para deploy continuo no Netlify com banco serverless no Neon:
-
-1. Crie um projeto no [Neon](https://neon.com) (plano gratuito) e rode `npx neon init` + `npx neon deploy` na raiz — isso gera o `neon.ts` e o `.env.local`.
-2. No Netlify: **Add new site → Import from GitHub → pulseboard**. O [netlify.toml](netlify.toml) instala o runtime oficial do Next.js e roda `prisma migrate deploy` a cada build.
-3. Cadastre `DATABASE_URL` e `DATABASE_URL_UNPOOLED` (as strings do Neon) em **Site configuration → Environment variables**.
-4. Popule os dados demo uma unica vez, do seu computador: `DATABASE_URL=<string do Neon> npm run db:seed`.
-5. A partir dai, todo push na `main` dispara deploy com migracoes automaticas.
+1. Suba o codigo para o GitHub e, na Vercel, clique em **Add New → Project → Import** do repositorio `pulseboard`. O framework Next.js e detectado automaticamente; o build e `next build` e a versao do Node vem das `engines` do `package.json` (20+).
+2. Provisione um PostgreSQL hospedado. O caminho mais simples e o **Vercel Postgres** (Storage → Create Database → Postgres, no Marketplace), que ja grava `DATABASE_URL` e `DATABASE_URL_UNPOOLED` nas variaveis de ambiente do projeto. Supabase, Railway ou qualquer Postgres com PgBouncer tambem funcionam — nesse caso, cadastre as duas variaveis manualmente em **Project → Settings → Environment Variables** (pooled no `DATABASE_URL`, string direta no `DATABASE_URL_UNPOOLED`).
+3. Aplique as migracoes no banco de producao uma unica vez, do seu computador: `DATABASE_URL=<string de producao> npm run db:migrate`. Se preferir rodar `prisma migrate deploy` a cada deploy, crie um script `vercel-build` no `package.json` (`"vercel-build": "prisma migrate deploy && next build"`).
+4. Popule os dados demo uma unica vez, do seu computador: `DATABASE_URL=<string de producao> npm run db:seed`.
+5. A partir dai, todo push na `main` dispara deploy automatico.
 
 Nao use `DB_DRIVER=memory` em producao: em serverless a memoria e descartada entre requisicoes e a sessao de login nao sobrevive.
 
